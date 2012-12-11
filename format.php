@@ -42,7 +42,7 @@ $jsmodule = array(
 ?>    
 <style type="text/css" media="screen">
     /* <![CDATA[ */
-    @import url(<?php echo $CFG->wwwroot ?>/course/format/tabtopics/tabtop.css);
+    @import url("<?php echo $CFG->wwwroot ?>/course/format/tabtopics/tabtop.css");
     /* ]]> */
 </style>
 
@@ -109,6 +109,39 @@ if (!$PAGE->user_is_editing())
     }
     echo '</ul>';
 
+    //Insert the section 0
+    $section = 0;
+    $thissection = $sections[$section];
+
+    if ($thissection->summary or $thissection->sequence or $PAGE->user_is_editing())
+    {
+        // Note, 'right side' is BEFORE content.
+        echo '<ul class="sectionul"><li id="sectiontd-0" class="section main yui3-dd-drop">';
+        echo '<div class="right side" >&nbsp;</div>';
+        echo '<div class="content">';
+
+        if (!empty($thissection->name))
+        {
+            echo $OUTPUT->heading(format_string($thissection->name, true, array('context' => $context)), 3, 'sectionname');
+        }
+
+        echo '<div class="summary">';
+
+        $coursecontext = get_context_instance(CONTEXT_COURSE, $course->id);
+        $summarytext = file_rewrite_pluginfile_urls($thissection->summary, 'pluginfile.php', $coursecontext->id, 'course', 'section', $thissection->id);
+        $summaryformatoptions = new stdClass;
+        $summaryformatoptions->noclean = true;
+        $summaryformatoptions->overflowdiv = true;
+        echo format_text($summarytext, $thissection->summaryformat, $summaryformatoptions);
+
+        echo '</div>';
+
+        print_section($course, $thissection, $mods, $modnamesused);
+
+        echo '</div>';
+        echo "</li>";
+
+    }
 
     /// Now all the normal modules by topic
     /// Everything below uses "section" terminology - each "section" is a topic.
