@@ -230,7 +230,7 @@ if (!$PAGE->user_is_editing())
             else if ($currenttopic)
             {
                 $sectionstyle = ' current';
-                $currenttext = get_accesshide(get_string('currenttopic', 'access'));
+                $currenttext = get_accesshide(get_string('currenttopic', 'format_tabtopics'));
             }
             else
             {
