@@ -19,3 +19,48 @@
 .course-content ul.topics li.section .left {width:40px;float:left;text-align:center;}
 .course-content ul.topics li.section .right {width:40px;float:right;text-align:center;}
 .jumpmenu {text-align:center;}
+
+
+/* The border under tabs */
+.yui3-skin-sam .yui3-tabview-list
+{
+    border-bottom-color: #2647A0;
+}
+
+/*The regular tab style*/
+.yui3-skin-sam .yui3-tab-label
+{
+    background: url("pix/gradient.png") repeat-x scroll 0 0 #efefef;
+}
+
+/*The regular tab style hover*/
+.yui3-skin-sam .yui3-tab-label:focus,
+.yui3-skin-sam .yui3-tab-label:hover
+{
+    background: url("pix/gradient.png") repeat-x scroll 0 0 #EDF5FF;
+}
+
+/*The selected tab border color*/
+.yui3-skin-sam .yui3-tab-selected .yui3-tab-label, 
+.yui3-skin-sam .yui3-tab-selected .yui3-tab-label:focus, 
+.yui3-skin-sam .yui3-tab-selected .yui3-tab-label:hover
+{
+    border-color: #243356;
+    background: url("pix/gradient.png") repeat-x scroll 0 0 #2647A0;
+}
+
+/*The tab content background color*/
+.yui3-skin-sam .yui3-tabview-panel
+{
+    background-color: #EDF5FF;
+}
+
+.yui3-skin-sam .yui3-tab-selected #marker
+{
+    margin-bottom: 1px; /* for overlap (mapped to tabview-list border-width) */
+}
+
+ul.sectionul li
+{
+    list-style-type: none;
+}

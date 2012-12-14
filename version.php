@@ -18,8 +18,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2012121100;        // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires = 2011120500;        // Requires this Moodle version.
+$plugin->version = 2012121400;        // The current plugin version (Date: YYYYMMDDXX).
+$plugin->requires = 2012110900;        // Requires this Moodle version.
 $plugin->component = 'format_tabtopics';    // Full name of the plugin (used for diagnostics).
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '2.4.1 (Build: 2012121100)';
+$plugin->release = '2.4.2 (Build: 2012121400)';

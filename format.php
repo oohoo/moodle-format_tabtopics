@@ -20,6 +20,12 @@ require_once($CFG->libdir . '/completionlib.php');
 
 $PAGE->requires->js('/course/format/tabtopics/module.js');
 
+
+// make sure all sections are created
+$course = course_get_format($course)->get_course();
+course_create_sections_if_missing($course, range(0, $course->numsections));
+$context = get_context_instance(CONTEXT_COURSE, $course->id);
+
 $topic = optional_param('topic', -1, PARAM_INT);
 //Moodle < 2.3 Compatibility
 if (function_exists('course_set_display'))
@@ -39,12 +45,7 @@ $jsmodule = array(
     'fullpath' => '/course/format/tabtopics/module.js',
     'requires' => array('base', 'node', 'json', 'io')
 );
-?>    
-<style type="text/css" media="screen">
-    /* <![CDATA[ */
-    @import url("<?php echo $CFG->wwwroot ?>/course/format/tabtopics/tabtop.css");
-    /* ]]> */
-</style>
+?>
 
 <?php
 $topic = optional_param('topic', -1, PARAM_INT);
@@ -62,7 +63,6 @@ if (!$PAGE->user_is_editing())
     <!--> <![endif]-->
 
     ';
-    $context = get_context_instance(CONTEXT_COURSE, $course->id);
 
     if (($marker >= 0) && has_capability('moodle/course:setcurrentsection', $context) && confirm_sesskey())
     {
