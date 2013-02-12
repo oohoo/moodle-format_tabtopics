@@ -24,15 +24,17 @@ M.tabtopics=
             });
             
             tabview.render();
-    		//get highlighted section
-			counter = 0;
-			thisone=0;
-			Y.all('#sections .yui3-tabview-list li').each(function (node) {
-				if (node.one('#marker')) {
-					thisone = counter;
-				}
-				counter++;
-			});
+            //get highlighted section
+            counter = 0;
+            thisone=0;
+            Y.all('#sections .yui3-tabview-list li').each(function (node)
+            {
+                if (node.one('#marker'))
+                {
+                    thisone = counter;
+                }
+                counter++;
+            });
 			
             //get the URL param to select the good section by  default
             var url=document.URL.split('#');
@@ -41,9 +43,11 @@ M.tabtopics=
                 //The index start at 0 so -1
                 var sectionnum = parseInt(url[1].split('-')[1])-1;
                 tabview.selectChild(sectionnum);
-            } else {
-				tabview.selectChild(thisone);
-			}
+            }
+            else
+            {
+                tabview.selectChild(thisone);
+            }
 
         });
         addonload(function()
