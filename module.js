@@ -12,47 +12,47 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later  **
  * *************************************************************************
  * ************************************************************************ */
-M.tabtopics=
-{
-    init : function(Y)
-    {
-        Y.use('tabview', function(Y)
+M.tabtopics =
         {
-            var tabview = new Y.TabView(
+            init: function(Y)
             {
-                srcNode: '#sections'
-            });
-            
-            tabview.render();
-            //get highlighted section
-            counter = 0;
-            thisone=0;
-            Y.all('#sections .yui3-tabview-list li').each(function (node)
-            {
-                if (node.one('#marker'))
+                Y.use('tabview', function(Y)
                 {
-                    thisone = counter;
-                }
-                counter++;
-            });
-			
-            //get the URL param to select the good section by  default
-            var url=document.URL.split('#');
-            if(url.length > 1)
-            {
-                //The index start at 0 so -1
-                var sectionnum = parseInt(url[1].split('-')[1])-1;
-                tabview.selectChild(sectionnum);
-            }
-            else
-            {
-                tabview.selectChild(thisone);
-            }
+                    var tabview = new Y.TabView(
+                            {
+                                srcNode: '#sections'
+                            });
+                            //Display the tabs after rendered
+                    tabview.after('render', function(e)
+                    {
+                        Y.one('#maincontainer').setStyle('display', null);
+                    });
+                    tabview.render();
+                    //get highlighted section
+                    counter = 0;
+                    thisone = 0;
+                    Y.all('#sections .yui3-tabview-list li').each(function(node)
+                    {
+                        if (node.one('#marker'))
+                        {
+                            thisone = counter;
+                        }
+                        counter++;
+                    });
 
-        });
-        addonload(function()
-        {
-            document.getElementById("maincontainer").style.display='';
-        }); 
-    }
-}
+                    //get the URL param to select the good section by  default
+                    var url = document.URL.split('#');
+                    if (url.length > 1)
+                    {
+                        //The index start at 0 so -1
+                        var sectionnum = parseInt(url[1].split('-')[1]) - 1;
+                        tabview.selectChild(sectionnum);
+                    }
+                    else
+                    {
+                        tabview.selectChild(thisone);
+                    }
+
+                });
+            }
+        }

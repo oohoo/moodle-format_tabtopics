@@ -53,6 +53,7 @@ Note: You can change the tab color by adding this to your theme CSS file
     {
         border-color: #243356 !important;
         background-color: #2647A0 !important;
+        /* Note: On IE9 you will probably have to put "background: #2647A0 !important;" in order to force the color changes */
     }
     /*The tab content background color*/
     .yui3-skin-sam .yui3-tabview-panel
