@@ -11,22 +11,21 @@
  * @link        http://oohoo.biz                                          **
  * @author      Nicolas Bretin                                            **
  * @author      Braedan Jongerius                                         **
+ * @author      Dustin Durand                                             **
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later  **
  * *************************************************************************
  * ************************************************************************ */
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/course/format/lib.php');
 
-class format_tabtopics extends format_base
-{
+class format_tabtopics extends format_base {
 
     /**
      * Returns true if this course format uses sections
      *
      * @return bool
      */
-    public function uses_sections()
-    {
+    public function uses_sections() {
         return true;
     }
 
@@ -38,19 +37,13 @@ class format_tabtopics extends format_base
      * @param int|stdClass $section Section object from database or just field section.section
      * @return string Display name that the course format prefers, e.g. "Topic 2"
      */
-    public function get_section_name($section)
-    {
+    public function get_section_name($section) {
         $section = $this->get_section($section);
-        if ((string) $section->name !== '')
-        {
+        if ((string) $section->name !== '') {
             return format_string($section->name, true, array('context' => context_course::instance($this->courseid)));
-        }
-        else if ($section->section == 0)
-        {
+        } else if ($section->section == 0) {
             return get_string('section0name', 'format_tabtopics');
-        }
-        else
-        {
+        } else {
             return get_string('topic') . ' ' . $section->section;
         }
     }
@@ -65,50 +58,34 @@ class format_tabtopics extends format_base
      *     'sr' (int) used by multipage formats to specify to which section to return
      * @return null|moodle_url
      */
-    public function get_view_url($section, $options = array())
-    {
+    public function get_view_url($section, $options = array()) {
         $course = $this->get_course();
         $url = new moodle_url('/course/view.php', array('id' => $course->id));
 
         $sr = null;
-        if (array_key_exists('sr', $options))
-        {
+        if (array_key_exists('sr', $options)) {
             $sr = $options['sr'];
         }
-        if (is_object($section))
-        {
+        if (is_object($section)) {
             $sectionno = $section->section;
-        }
-        else
-        {
+        } else {
             $sectionno = $section;
         }
-        if ($sectionno !== null)
-        {
-            if ($sr !== null)
-            {
-                if ($sr)
-                {
+        if ($sectionno !== null) {
+            if ($sr !== null) {
+                if ($sr) {
                     $usercoursedisplay = COURSE_DISPLAY_MULTIPAGE;
                     $sectionno = $sr;
-                }
-                else
-                {
+                } else {
                     $usercoursedisplay = COURSE_DISPLAY_SINGLEPAGE;
                 }
-            }
-            else
-            {
+            } else {
                 $usercoursedisplay = $course->coursedisplay;
             }
-            if ($sectionno != 0 && $usercoursedisplay == COURSE_DISPLAY_MULTIPAGE)
-            {
+            if ($sectionno != 0 && $usercoursedisplay == COURSE_DISPLAY_MULTIPAGE) {
                 $url->param('section', $sectionno);
-            }
-            else
-            {
-                if (!empty($options['navigation']))
-                {
+            } else {
+                if (!empty($options['navigation'])) {
                     return null;
                 }
                 $url->set_anchor('section-' . $sectionno);
@@ -126,8 +103,7 @@ class format_tabtopics extends format_base
      *
      * @return stdClass
      */
-    public function supports_ajax()
-    {
+    public function supports_ajax() {
         $ajaxsupport = new stdClass();
         $ajaxsupport->capable = true;
         $ajaxsupport->testedbrowsers = array('MSIE' => 6.0, 'Gecko' => 20061111, 'Safari' => 531, 'Chrome' => 6.0);
@@ -140,16 +116,13 @@ class format_tabtopics extends format_base
      * @param global_navigation $navigation
      * @param navigation_node $node The course node within the navigation
      */
-    public function extend_course_navigation($navigation, navigation_node $node)
-    {
+    public function extend_course_navigation($navigation, navigation_node $node) {
         global $PAGE;
         // if section is specified in course/view.php, make sure it is expanded in navigation
-        if ($navigation->includesectionnum === false)
-        {
+        if ($navigation->includesectionnum === false) {
             $selectedsection = optional_param('section', null, PARAM_INT);
             if ($selectedsection !== null && (!defined('AJAX_SCRIPT') || AJAX_SCRIPT == '0') &&
-                    $PAGE->url->compare(new moodle_url('/course/view.php'), URL_MATCH_BASE))
-            {
+                    $PAGE->url->compare(new moodle_url('/course/view.php'), URL_MATCH_BASE)) {
                 $navigation->includesectionnum = $selectedsection;
             }
         }
@@ -165,17 +138,14 @@ class format_tabtopics extends format_base
      *
      * @return array This will be passed in ajax respose
      */
-    function ajax_section_move()
-    {
+    function ajax_section_move() {
         global $PAGE;
         $titles = array();
         $course = $this->get_course();
         $modinfo = get_fast_modinfo($course);
         $renderer = $this->get_renderer($PAGE);
-        if ($renderer && ($sections = $modinfo->get_section_info_all()))
-        {
-            foreach ($sections as $number => $section)
-            {
+        if ($renderer && ($sections = $modinfo->get_section_info_all())) {
+            foreach ($sections as $number => $section) {
                 $titles[$number] = $renderer->section_title($section, $course);
             }
         }
@@ -188,8 +158,7 @@ class format_tabtopics extends format_base
      * @return array of default blocks, must contain two keys BLOCK_POS_LEFT and BLOCK_POS_RIGHT
      *     each of values is an array of block names (for left and right side columns)
      */
-    public function get_default_blocks()
-    {
+    public function get_default_blocks() {
         return array(
             BLOCK_POS_LEFT => array(),
             BLOCK_POS_RIGHT => array('search_forums', 'news_items', 'calendar_upcoming', 'recent_activity')
@@ -203,15 +172,14 @@ class format_tabtopics extends format_base
      * - coursedisplay
      * - numsections
      * - hiddensections
+     * - is zero section a tab
      *
      * @param bool $foreditform
      * @return array of options
      */
-    public function course_format_options($foreditform = false)
-    {
+    public function course_format_options($foreditform = false) {
         static $courseformatoptions = false;
-        if ($courseformatoptions === false)
-        {
+        if ($courseformatoptions === false) {
             $courseconfig = get_config('moodlecourse');
             $courseformatoptions = array(
                 'numsections' => array(
@@ -226,19 +194,24 @@ class format_tabtopics extends format_base
                     'default' => $courseconfig->coursedisplay,
                     'type' => PARAM_INT,
                 ),
+                'isZeroTab' => array(
+                    'label' => new lang_string('tabtopics_zero_as_tab', 'format_tabtopics'),
+                    'help' => 'tabtopics_zero_as_tab',
+                    'element_type' => 'advcheckbox',
+                    'default' => 0,
+                    'element_attributes' => array('', array('group' => 1), array(0, 1)),
+                    'type' => PARAM_INT,
+                ),
             );
         }
-        if ($foreditform && !isset($courseformatoptions['coursedisplay']['label']))
-        {
+        if ($foreditform && !isset($courseformatoptions['coursedisplay']['label'])) {
             $courseconfig = get_config('moodlecourse');
             $max = $courseconfig->maxsections;
-            if (!isset($max) || !is_numeric($max))
-            {
+            if (!isset($max) || !is_numeric($max)) {
                 $max = 52;
             }
             $sectionmenu = array();
-            for ($i = 0; $i <= $max; $i++)
-            {
+            for ($i = 0; $i <= $max; $i++) {
                 $sectionmenu[$i] = "$i";
             }
             $courseformatoptionsedit = array(
@@ -270,11 +243,49 @@ class format_tabtopics extends format_base
                     ),
                     'help' => 'coursedisplay',
                     'help_component' => 'moodle',
+                    'isZeroTab' => array(
+                        'label' => new lang_string('tabtopics_zero_as_tab', 'format_tabtopics'),
+                        'help' => 'tabtopics_zero_as_tab',
+                        'element_type' => 'advcheckbox',
+                        'element_attributes' => array('', array(), array(0, 1)),
+                        'type' => PARAM_INT,
+                    ),
                 )
             );
             $courseformatoptions = array_merge_recursive($courseformatoptions, $courseformatoptionsedit);
         }
         return $courseformatoptions;
+    }
+
+    /**
+     * Returns whether the current course should have the section 0 as a header
+     * or a tab. If for any reason the setting doesn't exist then it defaults to
+     * header. (false)
+     * 
+     * Defaults to false if setting doesn't exist.
+     * 
+     * @global type $DB
+     * @return boolean
+     */
+    public function is_section_zero_tab() {
+        global $DB;
+
+        //get course id
+        $courseid = $this->get_courseid();
+
+        //course id is zero id course doesn't exist - shouldn't happen
+        if ($courseid == 0)
+            return false;
+
+        //get option
+        $option = $DB->get_record('course_format_options', array('courseid' => $courseid, 'name' => 'isZeroTab'));
+
+        //if this value never existed, then we assume false
+        if (!$option)
+            return false;
+
+
+        return $option->value == 1 ? true : false;
     }
 
     /**
@@ -290,30 +301,22 @@ class format_tabtopics extends format_base
      *     this object contains information about the course before update
      * @return bool whether there were any changes to the options values
      */
-    public function update_course_format_options($data, $oldcourse = null)
-    {
-        if ($oldcourse !== null)
-        {
+    public function update_course_format_options($data, $oldcourse = null) {
+        if ($oldcourse !== null) {
             $data = (array) $data;
             $oldcourse = (array) $oldcourse;
             $options = $this->course_format_options();
-            foreach ($options as $key => $unused)
-            {
-                if (!array_key_exists($key, $data))
-                {
-                    if (array_key_exists($key, $oldcourse))
-                    {
+            foreach ($options as $key => $unused) {
+                if (!array_key_exists($key, $data)) {
+                    if (array_key_exists($key, $oldcourse)) {
                         $data[$key] = $oldcourse[$key];
-                    }
-                    else if ($key === 'numsections')
-                    {
+                    } else if ($key === 'numsections') {
                         // If previous format does not have the field 'numsections'
                         // and $data['numsections'] is not set,
                         // we fill it with the maximum section number from the DB
                         $maxsection = $DB->get_field_sql('SELECT max(section) from {course_sections}
                             WHERE course = ?', array($this->courseid));
-                        if ($maxsection)
-                        {
+                        if ($maxsection) {
                             // If there are no sections, or just default 0-section, 'numsections' will be set to default
                             $data['numsections'] = $maxsection;
                         }
@@ -322,6 +325,42 @@ class format_tabtopics extends format_base
             }
         }
         return $this->update_format_options($data);
+    }
+
+    /**
+     * Determines whether the unavaliable override is avaliable
+     * 
+     * @param type $thissection
+     * @return boolean
+     */
+    public function is_unavailable_override($thissection) {
+        $course = $this->get_course();
+        if (!$course->hiddensections && $thissection->available) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Determines whether the user can access or view the section
+     * 
+     * @global Object $USER
+     * @global Object $CFG
+     * @param Object $thissection
+     * @return boolean true on visible to user, else false
+     */
+    public function check_user_access($thissection) {
+        // Show the section if the user is permitted to access it, OR if it's not available
+        // but showavailability is turned on (and there is some available info text).
+        $showsection = $thissection->uservisible;
+            
+        //print_object($thissection);
+        
+        if (!$showsection) {
+            return false;
+        }
+
+        return true;
     }
 
 }

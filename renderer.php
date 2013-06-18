@@ -95,4 +95,21 @@ class format_tabtopics_renderer extends format_section_renderer_base
 
         return array_merge($controls, parent::section_edit_controls($course, $section, $onsectionpage));
     }
+    
+    /**
+     * Displays the avaliability message if not visible
+     */
+    public function section_availability_message($section, $canViewHidden) {
+        echo parent::section_availability_message($section, $canViewHidden);
+    }
+    
+    /**
+     * Display a hidden section message
+     * 
+     * @param type $section
+     */
+    public function section_hidden($section) {
+        echo parent::section_hidden($section);
+    }
+    
 }
