@@ -136,7 +136,7 @@ if (!$PAGE->user_is_editing())
 
         //if section is not a tab, display as a header
         if(!$isZeroTab) {
-            echo $corerenderer->course_section_cm_list($course, $thissection);
+            print_section($course, $thissection, $mods, $modnamesused);
         }
         
         echo '</div>';
@@ -379,12 +379,12 @@ if (!$PAGE->user_is_editing())
                     echo '</div>';
 
                     
-                    echo $corerenderer->course_section_cm_list($course, $section);
+                    print_section($course, $thissection, $mods, $modnamesused);
                     
                     echo '<br />';
                     if ($PAGE->user_is_editing())
                     {
-                        echo $corerenderer->course_section_cm_list($course, $section);
+                       print_section_add_menus($course, $section, $modnames);
                     }
                     
                     
@@ -428,7 +428,7 @@ if (!$PAGE->user_is_editing())
             echo '<div class="content">';
             echo $OUTPUT->heading(get_string('orphanedactivities'), 3, 'sectionname');
             
-            echo $corerenderer->course_section_cm_list($course, $thissection);
+            print_section($course, $thissection, $mods, $modnamesused);
             
             echo '</div>';
             echo "</li>\n";
