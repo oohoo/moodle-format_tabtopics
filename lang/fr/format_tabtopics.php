@@ -26,3 +26,8 @@ $string['hidetopicfromothers'] = 'Cacher la section';
 $string['showfromothers'] = 'Afficher la section';
 $string['showtopicfromothers'] = 'Afficher la section';
 $string['showalltopics'] = 'Afficher toutes les sections';
+
+$string['tabtopics_zero_as_tab'] = 'Section zéro en tant qu\'onglet';
+$string['tabtopics_zero_as_tab_help'] = 'Est-ce que la section zéro doit être un onglet? Si non, elle sera affichée en haut du cours.';
+$string['tabtopics_remember_last_tab_session'] = 'Renvoyer l\'utilisateur au dernier onglet visité';
+$string['tabtopics_remember_last_tab_session_help'] = 'Si oui, l\'utilisateur sera retourné au dernier onglet visité au lieu du premier onglet.';

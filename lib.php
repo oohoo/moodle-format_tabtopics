@@ -202,6 +202,13 @@ class format_tabtopics extends format_base {
                     'element_attributes' => array('', array('group' => 1), array(0, 1)),
                     'type' => PARAM_INT,
                 ),
+                'remember_last_tab_session' => array(
+                    'label' => new lang_string('tabtopics_remember_last_tab_session', 'format_tabtopics'),
+                    'help' => 'tabtopics_remember_last_tab_session',
+                    'element_type' => 'selectyesno',
+                    'default' => 1,
+                    'type' => PARAM_INT,
+                ),
             );
         }
         if ($foreditform && !isset($courseformatoptions['coursedisplay']['label'])) {
@@ -245,9 +252,15 @@ class format_tabtopics extends format_base {
                     'help_component' => 'moodle',
                     'isZeroTab' => array(
                         'label' => new lang_string('tabtopics_zero_as_tab', 'format_tabtopics'),
-                        'help' => 'tabtopics_zero_as_tab',
+                        'help' => 'tabtopics_remember_last_tab_session',
                         'element_type' => 'advcheckbox',
                         'element_attributes' => array('', array(), array(0, 1)),
+                        'type' => PARAM_INT,
+                    ),
+                    'remember_last_tab_session' => array(
+                        'label' => new lang_string('tabtopics_remember_last_tab_session', 'format_tabtopics'),
+                        'help' => 'tabtopics_remember_last_tab_session',
+                        'element_type' => 'selectyesno',
                         'type' => PARAM_INT,
                     ),
                 )
@@ -279,6 +292,35 @@ class format_tabtopics extends format_base {
 
         //get option
         $option = $DB->get_record('course_format_options', array('courseid' => $courseid, 'name' => 'isZeroTab'));
+
+        //if this value never existed, then we assume false
+        if (!$option)
+            return false;
+
+
+        return $option->value == 1 ? true : false;
+    }
+    
+    /**
+     * Returns whether the current course should save the last tab the user clicked or returned to the default tab
+     * 
+     * Defaults to false if setting doesn't exist.
+     * 
+     * @global type $DB
+     * @return boolean
+     */
+    public function is_remember_last_tab_session() {
+        global $DB;
+
+        //get course id
+        $courseid = $this->get_courseid();
+
+        //course id is zero id course doesn't exist - shouldn't happen
+        if ($courseid == 0)
+            return false;
+
+        //get option
+        $option = $DB->get_record('course_format_options', array('courseid' => $courseid, 'name' => 'remember_last_tab_session'));
 
         //if this value never existed, then we assume false
         if (!$option)

@@ -28,6 +28,7 @@ $context = get_context_instance(CONTEXT_COURSE, $course->id);
 $tabtopicsrenderer = $PAGE->get_renderer('format_tabtopics');
 $corerenderer = $PAGE->get_renderer('core', 'course');
 $isZeroTab = course_get_format($course)->is_section_zero_tab();
+$is_remember_last_tab_session = course_get_format($course)->is_remember_last_tab_session();
 
 $topic = optional_param('topic', -1, PARAM_INT);
 
@@ -40,10 +41,14 @@ $jsmodule = array(
 //THIS IS THE CODE FOR GENERATING THE TABVIEW. ITS ONLY USED DURING NON EDITING
 if (!$PAGE->user_is_editing())
 {
+    echo '<script type="text/javascript">
+        var is_remember_last_tab_session = ' . ($is_remember_last_tab_session ? 'true' : 'false') . ';
+    </script>';
+
     echo '
 <style type="text/css" media="screen">
 /* <![CDATA[ */
-@import url("'.$CFG->wwwroot.'/course/format/tabtopics/tabtop.css");
+@import url("' . $CFG->wwwroot . '/course/format/tabtopics/tabtop.css");
 /* ]]> */
 </style>
 ';
@@ -87,7 +92,7 @@ if (!$PAGE->user_is_editing())
     $completioninfo = new completion_info($course);
     echo $completioninfo->display_help_icon();
 
-    
+
     /// If currently moving a file then show the current clipboard
     //not too sure what this does
     if (ismoving($course->id))
@@ -97,16 +102,15 @@ if (!$PAGE->user_is_editing())
         echo "<ul class='topicstabs'>\n";
 
 
-            $stractivityclipboard = strip_tags(get_string('activityclipboard', '', $USER->activitycopyname));
-            $strcancel = get_string('cancel');
-            echo '<li class="clipboard">';
-            echo $stractivityclipboard . '&nbsp;&nbsp;(<a href="mod.php?cancelcopy=true&amp;sesskey=' . sesskey() . '">' . $strcancel . '</a>)';
-            echo "</li>\n";
+        $stractivityclipboard = strip_tags(get_string('activityclipboard', '', $USER->activitycopyname));
+        $strcancel = get_string('cancel');
+        echo '<li class="clipboard">';
+        echo $stractivityclipboard . '&nbsp;&nbsp;(<a href="mod.php?cancelcopy=true&amp;sesskey=' . sesskey() . '">' . $strcancel . '</a>)';
+        echo "</li>\n";
 
         echo '</ul>';
-
     }
-    
+
     //Insert the section 0
     $section = 0;
     $thissection = $sections[$section];
@@ -135,10 +139,11 @@ if (!$PAGE->user_is_editing())
         echo '</div>';
 
         //if section is not a tab, display as a header
-        if(!$isZeroTab) {
+        if (!$isZeroTab)
+        {
             echo $corerenderer->course_section_cm_list($course, $thissection);
         }
-        
+
         echo '</div>';
         echo "</li>";
     }
@@ -146,7 +151,7 @@ if (!$PAGE->user_is_editing())
     //if section is a tab we want to start sections at 0, otherwise
     //section 0 is a header and we start at section 1
     $start_tab = $isZeroTab ? 0 : 1;
-    
+
     /// Now all the normal modules by topic
     /// Everything below uses "section" terminology - each "section" is a topic.
     $timenow = time();
@@ -158,7 +163,7 @@ if (!$PAGE->user_is_editing())
     echo '<ul>'; //begining of the unordered list
     while ($section <= $course->numsections)
     {
-        
+
         if (!empty($sections[$section]))
         {
             $thissection = $sections[$section];
@@ -173,19 +178,20 @@ if (!$PAGE->user_is_editing())
             $thissection->summaryformat = FORMAT_HTML;
             $thissection->visible = 1;
         }
-        
+
         //check if the current section is visible to user
         $unaval_override = course_get_format($course)->is_unavailable_override($thissection);
-        
+
         //check if override is turned on (informs user section not avaliable)
         $user_access = course_get_format($course)->check_user_access($thissection);
-        
+
         //if don't have access AND override "not avaliable" message not on - slip tab
-        if(!$user_access && !$unaval_override) { 
+        if (!$user_access && !$unaval_override)
+        {
             $section++;
             continue;
         }
-        
+
         //the default action is to set the name of each topic to null.
         $secname = $thissection->name;
         //this will set the name of undefined sections to a number. 
@@ -201,7 +207,7 @@ if (!$PAGE->user_is_editing())
             if ($course->marker == $section)
                 echo '<li id ="marker" class="markerselected"><a href="#section-' . $section . '" id = "marker" class="markerselected">' . $secname . '</a></li>';
             else
-                echo '<li><a href="#section-' . $section . '">' . $secname .  '</a></li>'; //prints each sectio
+                echo '<li><a href="#section-' . $section . '">' . $secname . '</a></li>'; //prints each sectio
         }
         $section++;
     }
@@ -230,30 +236,32 @@ if (!$PAGE->user_is_editing())
             $thissection->visible = 1;
             $thissection->id = $DB->insert_record('course_sections', $thissection);
         }
-        
+
         //check if the current section is visible to user
         $unaval_override = course_get_format($course)->is_unavailable_override($thissection);
-        
+
         //check if override is turned on (informs user section not avaliable)
         $user_access = course_get_format($course)->check_user_access($thissection);
-        
+
         //if don't have access AND override "not avaliable" message not on - slip tab
-        if(!$user_access && !$unaval_override){
+        if (!$user_access && !$unaval_override)
+        {
             $section++;
             continue;
         }
-        
+
         //if user doesn't have access, but override is present - display not avaliable message
-        if(!$user_access && $unaval_override){
+        if (!$user_access && $unaval_override)
+        {
             echo '<div id="section-' . $section . '">';
-	    echo '<div class="right side"></div>';
+            echo '<div class="right side"></div>';
 
             echo '<div class="content">';
             echo $tabtopicsrenderer->section_hidden($section);
-	    echo '</div>';
-	    echo '</div>';
-            
-	    $section++;
+            echo '</div>';
+            echo '</div>';
+
+            $section++;
             continue;
         }
 
@@ -344,18 +352,18 @@ if (!$PAGE->user_is_editing())
                 else
                 {
                     $display = '';
-                    
+
                     //display section if avaliable
                     if (!is_null($thissection->name))
                         $display = $thissection->name;
-                    
+
                     //If not visible - show icon for people who can see it
                     if (!$thissection->visible)
-                        $display .= "<img style='float:right' src='".$OUTPUT->pix_url('i/show')."'/>";
-                    
+                        $display .= "<img style='float:right' src='" . $OUTPUT->pix_url('i/show') . "'/>";
+
                     //output header for section
                     echo $OUTPUT->heading($display, 3, 'sectionname');
-                    
+
                     echo '<div class="summary">';
                     if ($thissection->summary)
                     {
@@ -378,29 +386,25 @@ if (!$PAGE->user_is_editing())
                     }
                     echo '</div>';
 
-                    
+
                     echo $corerenderer->course_section_cm_list($course, $section);
-                    
+
                     echo '<br />';
                     if ($PAGE->user_is_editing())
                     {
                         echo $corerenderer->course_section_cm_list($course, $section);
                     }
-                    
-                    
                 }
-                
+
                 //echo a conditional message if avaliable
-                echo $tabtopicsrenderer->section_availability_message($thissection,
-                        has_capability('moodle/course:viewhiddensections', $context));
-                
+                echo $tabtopicsrenderer->section_availability_message($thissection, has_capability('moodle/course:viewhiddensections', $context));
+
                 echo '</div>';
                 echo '</div>';
             }
         }
         unset($sections[$section]);
         $section++;
-        
     }
     echo '</div>';
     echo '</div>';
@@ -427,9 +431,9 @@ if (!$PAGE->user_is_editing())
             echo '</div>';
             echo '<div class="content">';
             echo $OUTPUT->heading(get_string('orphanedactivities'), 3, 'sectionname');
-            
+
             echo $corerenderer->course_section_cm_list($course, $thissection);
-            
+
             echo '</div>';
             echo "</li>\n";
         }

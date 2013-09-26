@@ -82,10 +82,9 @@ M.tabtopics =
                     }
                     else
                     {
-
                         //check for saved cookie state for course
                         var value = Y.Cookie.get(state_cookie + courseid);
-                        if (value && value < tab_count)
+                        if (is_remember_last_tab_session && value && value < tab_count)
                             tabview.selectChild(value);
 
                         else {//based on php marker (from default marker setting)
