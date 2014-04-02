@@ -24,7 +24,15 @@ $PAGE->requires->js('/course/format/tabtopics/module.js');
 // make sure all sections are created
 $course = course_get_format($course)->get_course();
 course_create_sections_if_missing($course, range(0, $course->numsections));
-$context = get_context_instance(CONTEXT_COURSE, $course->id);
+//Replace get_context_instance by the class for moodle 2.6+
+if(class_exists('context_module'))
+{
+    $context = context_course::instance($course->id);
+}
+else
+{
+    $context = get_context_instance(CONTEXT_COURSE, $course->id);
+}
 $tabtopicsrenderer = $PAGE->get_renderer('format_tabtopics');
 $corerenderer = $PAGE->get_renderer('core', 'course');
 $isZeroTab = course_get_format($course)->is_section_zero_tab();
@@ -129,7 +137,15 @@ if (!$PAGE->user_is_editing())
 
         echo '<div class="summary">';
 
-        $coursecontext = get_context_instance(CONTEXT_COURSE, $course->id);
+        //Replace get_context_instance by the class for moodle 2.6+
+        if(class_exists('context_module'))
+        {
+            $coursecontext = context_course::instance($course->id);
+        }
+        else
+        {
+            $coursecontext = get_context_instance(CONTEXT_COURSE, $course->id);
+        }
         $summarytext = file_rewrite_pluginfile_urls($thissection->summary, 'pluginfile.php', $coursecontext->id, 'course', 'section', $thissection->id);
         $summaryformatoptions = new stdClass;
         $summaryformatoptions->noclean = true;
@@ -309,7 +325,16 @@ if (!$PAGE->user_is_editing())
                 echo '<div id="section-' . $section . '">';
                 // Note, 'right side' is BEFORE content.
                 echo '<div class="right side">';
-                if ($PAGE->user_is_editing() && has_capability('moodle/course:update', get_context_instance(CONTEXT_COURSE, $course->id)))
+                //Replace get_context_instance by the class for moodle 2.6+
+                if(class_exists('context_module'))
+                {
+                    $context_check = context_course::instance($course->id);
+                }
+                else
+                {
+                    $context_check = get_context_instance(CONTEXT_COURSE, $course->id);
+                }
+                if ($PAGE->user_is_editing() && has_capability('moodle/course:update', $context_check))
                 {
                     if ($course->marker == $section)
                     {  // Show the "light globe" on/off
@@ -367,7 +392,15 @@ if (!$PAGE->user_is_editing())
                     echo '<div class="summary">';
                     if ($thissection->summary)
                     {
-                        $coursecontext = get_context_instance(CONTEXT_COURSE, $course->id);
+                        //Replace get_context_instance by the class for moodle 2.6+
+                        if(class_exists('context_module'))
+                        {
+                            $coursecontext = context_course::instance($course->id);
+                        }
+                        else
+                        {
+                            $coursecontext = get_context_instance(CONTEXT_COURSE, $course->id);
+                        }
                         $summarytext = file_rewrite_pluginfile_urls($thissection->summary, 'pluginfile.php', $coursecontext->id, 'course', 'section', $thissection->id);
                         $summaryformatoptions = new stdClass();
                         $summaryformatoptions->noclean = true;
@@ -379,7 +412,16 @@ if (!$PAGE->user_is_editing())
                         echo '&nbsp;';
                     }
 
-                    if ($PAGE->user_is_editing() && has_capability('moodle/course:update', get_context_instance(CONTEXT_COURSE, $course->id)))
+                    //Replace get_context_instance by the class for moodle 2.6+
+                    if(class_exists('context_module'))
+                    {
+                        $context_check = context_course::instance($course->id);
+                    }
+                    else
+                    {
+                        $context_check = get_context_instance(CONTEXT_COURSE, $course->id);
+                    }
+                    if ($PAGE->user_is_editing() && has_capability('moodle/course:update', $context_check))
                     {
                         echo ' <a title="' . $streditsummary . '" href="editsection.php?id=' . $thissection->id . '">' .
                         '<img src="' . $OUTPUT->pix_url('t/edit') . '" class="icon edit" alt="' . $streditsummary . '" /></a><br /><br />';
@@ -410,7 +452,16 @@ if (!$PAGE->user_is_editing())
     echo '</div>';
     echo '</div>';
 
-    if (!$displaysection and $PAGE->user_is_editing() and has_capability('moodle/course:update', get_context_instance(CONTEXT_COURSE, $course->id)))
+    //Replace get_context_instance by the class for moodle 2.6+
+    if(class_exists('context_module'))
+    {
+        $context_check = context_course::instance($course->id);
+    }
+    else
+    {
+        $context_check = get_context_instance(CONTEXT_COURSE, $course->id);
+    }
+    if (!$displaysection and $PAGE->user_is_editing() and has_capability('moodle/course:update', $context_check))
     {
         // print stealth sections if present
         $modinfo = get_fast_modinfo($course);
